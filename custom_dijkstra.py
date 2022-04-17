@@ -1,5 +1,6 @@
 import sys
 import math
+import json
 
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -22,15 +23,17 @@ class Vertex():
         return self.coordinate
 
 class Graph(object):
-    def __init__(self, init_graph):
+    def __init__(self, init_graph: dict()):
         self.nodes = [str(n) for n in range(len(init_graph))]
-        self.graph = self.construct_graph(self.nodes, init_graph)
+        # 노드 이름 정의
+        self.graph = self.construct_graph(init_graph)
 
-    def construct_graph(self, nodes, init_graph):
+    def construct_graph(self, init_graph):
         # init_graph에 명시된 값을 바탕으로 그래프를 생성한다.
+        print(init_graph)
         graph = {}
-        for node in nodes:
-            graph[node] = {}
+        for name in init_graph:
+            graph[name] = {}
 
         graph.update(init_graph)
 
@@ -56,32 +59,10 @@ class Graph(object):
 
 class Dijkstra():
     def __init__(self):
-        example_input = [  # 임의로 가정한 입력 데이터
-            {
-                "xy": [10, 20],  # Vertex 0
-                "adjacent": ["2", "3"]
-            },
-            {
-                "xy": [45, 30],
-                "adjacent": ["4", "5"]
-            },
-            {
-                "xy": [30, 15],
-                "adjacent": ["0", "5"]
-            },
-            {
-                "xy": [5, 5],
-                "adjacent": None
-            },
-            {
-                "xy": [20, 10],
-                "adjacent": ["1", "3"]
-            },
-            {
-                "xy": [60, 5],
-                "adjacent": ["1", "2"]
-            }
-        ]
+        with open("vertexinput.json") as f:
+            example_input = json.load(f)
+
+        print(example_input)
 
         self.init_graph = {}
 
@@ -105,7 +86,7 @@ class Dijkstra():
         # previous_nodes, shortest_path = self.dijkstra_algorithm(graph=self.graph, start_node="4")
         # path = self.print_result(previous_nodes, shortest_path, start_node="4", target_node="5")
 
-        self.graph_visualize(path) # 생성된 경로 시각화 함수
+        # self.graph_visualize(path) # 생성된 경로 시각화 함수
 
     def graph_visualize(self, path):
         G = nx.DiGraph()
