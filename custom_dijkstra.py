@@ -1,6 +1,9 @@
 import sys
 import math
 
+import networkx as nx
+import matplotlib.pyplot as plt
+
 class Vertex():
     def __init__(self, id: int, coord: list(), adjacent: list()):
         self.id = id # 고유 식별값
@@ -94,13 +97,41 @@ class Dijkstra():
         self.graph = Graph(self.init_graph)
 
         previous_nodes, shortest_path = self.dijkstra_algorithm(graph=self.graph, start_node="4")
-        self.print_result(previous_nodes, shortest_path, start_node="4", target_node="5")
+        path = self.print_result(previous_nodes, shortest_path, start_node="4", target_node="5")
 
-        self.init_graph["0"]["4"] = 1
-        self.graph = Graph(self.init_graph)
+        # self.init_graph["0"]["4"] = 1
+        # self.graph = Graph(self.init_graph)
+        #
+        # previous_nodes, shortest_path = self.dijkstra_algorithm(graph=self.graph, start_node="4")
+        # path = self.print_result(previous_nodes, shortest_path, start_node="4", target_node="5")
 
-        previous_nodes, shortest_path = self.dijkstra_algorithm(graph=self.graph, start_node="4")
-        self.print_result(previous_nodes, shortest_path, start_node="4", target_node="5")
+        self.graph_visualize(path) # 생성된 경로 시각화 함수
+
+    def graph_visualize(self, path):
+        G = nx.DiGraph()
+
+        edges = list()
+
+        for key, val in self.init_graph.items():
+            for subkey, subval in val.items():
+                edges.append((key, subkey))
+
+        G.add_edges_from(edges)
+
+        red_edges = list()
+        for idx, edge in enumerate(path):
+            if idx == len(path) - 1:
+                break
+            red_edges.append((edge, path[idx + 1]))
+
+        black_edges = [edge for edge in G.edges()]
+
+        pos = nx.spring_layout(G)
+        nx.draw_networkx_nodes(G, pos, cmap=plt.get_cmap('jet'), node_size=500)
+        nx.draw_networkx_labels(G, pos)
+        nx.draw_networkx_edges(G, pos, edgelist=red_edges, edge_color='r', arrows=True)
+        nx.draw_networkx_edges(G, pos, edgelist=black_edges, arrows=False)
+        plt.show()
 
     def dijkstra_algorithm(self, graph, start_node):
         unvisited_nodes = list(graph.get_nodes())
@@ -144,6 +175,7 @@ class Dijkstra():
 
     def print_result(self, previous_nodes, shortest_path, start_node, target_node):
         path = []
+        refined_path = list()
         node = target_node
 
         while node != start_node: # 시작 노드에 도달할 때 까지 반복
@@ -153,9 +185,10 @@ class Dijkstra():
         path.append(start_node)
 
         print("최단 경로에 대한 거리값 : {}.".format(shortest_path[target_node]))
-        # print(" -> ".join(reversed(path)))
+        print(" -> ".join(reversed(path)))
         for vertex in reversed(path):
-            print(vertex)
+            refined_path.append(vertex)
+        return refined_path
 
     def calcdistance(self, input, start, dst):
         """ 입력받은 start, dst Vertex의 거리 값 계산 후 리턴"""
