@@ -44,17 +44,23 @@ class Graph(object):
 
         return graph
 
-    def get_nodes(self):
+    def get_nodes(self) -> list():
+        '''
+        Graph() 클래스의 self.nodes를 리턴하는 함수.
+        해당 리스트는 Vertex() 객체들의 식별자가 기록되어 있습니다.
+        '''
         return self.nodes
 
-    def get_outgoing_edges(self, node):
+    def get_outgoing_edges(self, node) -> list():
+        ''''''
         connections = []
         for out_node in self.nodes:
             if self.graph[node].get(out_node, False) != False:
                 connections.append(out_node)
         return connections
 
-    def value(self, node1, node2): # 두 노드 간 거리에 해당하는 값 리턴
+    def value(self, node1, node2):
+        ''' node1, node2의 거리에 해당하는 값을 리턴한다. '''
         return self.graph[node1][node2]
 
 class Dijkstra():
@@ -64,6 +70,12 @@ class Dijkstra():
 
         print(example_input)
 
+        '''
+        아래의 코드 블록은 흐름 상 Graph() 클래스 생성자로 이동하는것이 더 적절해 보임
+        Graph() 클래스 생성자 호출 시 json 오브젝트를 전달하고,
+        Graph() 클래스 생성자 내부에서는 입력받은 json 오브젝트를 바탕으로
+        그래프를 이루는 Vertex() 객체들을 생성한다.
+        '''
         self.init_graph = {}
 
         for idx, vertex in enumerate(example_input):
@@ -71,9 +83,6 @@ class Dijkstra():
             if vertex["adjacent"]:  # 인접한 Vertex가 있는 경우
                 for adjacent in vertex["adjacent"]:  # 각 인접 vertex에 대한 dict 생성 및 거리값 초기화
                     self.init_graph[str(idx)][adjacent] = self.calcdistance(example_input, idx, adjacent)
-
-        # print("init_graph")
-        # print(init_graph)
 
         self.graph = Graph(self.init_graph)
 
@@ -86,9 +95,9 @@ class Dijkstra():
         # previous_nodes, shortest_path = self.dijkstra_algorithm(graph=self.graph, start_node="4")
         # path = self.print_result(previous_nodes, shortest_path, start_node="4", target_node="5")
 
-        # self.graph_visualize(path) # 생성된 경로 시각화 함수
+        self.graph_visualize(example_input, path) # 생성된 경로 시각화 함수
 
-    def graph_visualize(self, path):
+    def graph_visualize(self, example_input, path):
         G = nx.DiGraph()
 
         edges = list()
@@ -105,13 +114,16 @@ class Dijkstra():
                 break
             red_edges.append((edge, path[idx + 1]))
 
-        black_edges = [edge for edge in G.edges()]
+        black_edges = [edge for edge in G.edges() if edge not in red_edges]
 
-        pos = nx.spring_layout(G)
+        pos = {}
+        for idx, vertex in enumerate(example_input):
+            pos[str(idx)] = vertex["xy"]
+
         nx.draw_networkx_nodes(G, pos, cmap=plt.get_cmap('jet'), node_size=500)
         nx.draw_networkx_labels(G, pos)
-        nx.draw_networkx_edges(G, pos, edgelist=red_edges, edge_color='r', arrows=True)
         nx.draw_networkx_edges(G, pos, edgelist=black_edges, arrows=False)
+        nx.draw_networkx_edges(G, pos, edgelist=red_edges, width=2.0, edge_color='r', arrows=True)
         plt.show()
 
     def dijkstra_algorithm(self, graph, start_node):
@@ -133,7 +145,7 @@ class Dijkstra():
 
         # 모든 노드를 방문할 때 까지 수행
         while unvisited_nodes:
-            # The code block below finds the node with the lowest score
+            # 아래 코드에서는 점수가 가장 낮은 노드를 찾는다
             current_min_node = None
             for node in unvisited_nodes:
                 if current_min_node == None:
