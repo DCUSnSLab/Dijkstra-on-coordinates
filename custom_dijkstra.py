@@ -19,9 +19,9 @@ class Vertex():
         return self.coordinate
 
 class Graph(object):
-    def __init__(self, nodes, init_graph):
-        self.nodes = nodes
-        self.graph = self.construct_graph(nodes, init_graph)
+    def __init__(self, init_graph):
+        self.nodes = [str(n) for n in range(len(init_graph))]
+        self.graph = self.construct_graph(self.nodes, init_graph)
 
     def construct_graph(self, nodes, init_graph):
         # init_graph에 명시된 값을 바탕으로 그래프를 생성한다.
@@ -51,6 +51,9 @@ class Graph(object):
     def value(self, node1, node2): # 두 노드 간 거리에 해당하는 값 리턴
         return self.graph[node1][node2]
 
+class Dijkstra():
+    def __init__(self):
+        pass
 
 def print_result(previous_nodes, shortest_path, start_node, target_node):
     path = []
@@ -141,8 +144,6 @@ if __name__ == '__main__':
         }
     ]
 
-    nodes_num = [str(n) for n in range(len(example_input))]
-
     init_graph = {}
 
     # print(nodes_num) # 노드에 이름은 불필요함. 단순 id값을 통한 입력, 별개로 현재 x, y 좌표 입력이 필요 (거리는 임의 입력이 아니라 계산으로 입력)
@@ -158,7 +159,7 @@ if __name__ == '__main__':
     # print("init_graph")
     # print(init_graph)
 
-    graph = Graph(nodes_num, init_graph)
+    graph = Graph(init_graph)
 
     # print("graph.graph")
     # print(graph.graph)
@@ -167,7 +168,7 @@ if __name__ == '__main__':
     print_result(previous_nodes, shortest_path, start_node="4", target_node="5")
 
     init_graph["0"]["4"] = 1
-    graph = Graph(nodes_num, init_graph)
+    graph = Graph(init_graph)
 
     previous_nodes, shortest_path = dijkstra_algorithm(graph=graph, start_node="4")
     print_result(previous_nodes, shortest_path, start_node="4", target_node="5")
