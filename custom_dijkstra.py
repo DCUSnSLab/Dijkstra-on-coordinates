@@ -120,10 +120,16 @@ class Dijkstra():
         for idx, vertex in enumerate(example_input):
             pos[str(idx)] = vertex["xy"]
 
-        nx.draw_networkx_nodes(G, pos, cmap=plt.get_cmap('jet'), node_size=500)
-        nx.draw_networkx_labels(G, pos)
-        nx.draw_networkx_edges(G, pos, edgelist=black_edges, arrows=False)
-        nx.draw_networkx_edges(G, pos, edgelist=red_edges, width=2.0, edge_color='r', arrows=True)
+        fig, ax = plt.subplots()
+
+        nx.draw_networkx_nodes(G, pos, cmap=plt.get_cmap('jet'), node_size=500, ax=ax)
+        nx.draw_networkx_labels(G, pos, ax=ax)
+        nx.draw_networkx_edges(G, pos, edgelist=black_edges, arrows=False, ax=ax)
+        nx.draw_networkx_edges(G, pos, edgelist=red_edges, width=2.0, edge_color='r', arrows=True, ax=ax)
+
+        plt.axis("on")
+        ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
+
         plt.show()
 
     def dijkstra_algorithm(self, graph, start_node):
