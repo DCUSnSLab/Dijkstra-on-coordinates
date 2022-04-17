@@ -53,24 +53,58 @@ class Graph(object):
 
 class Dijkstra():
     def __init__(self):
-        pass
+        example_input = [  # 임의로 가정한 입력 데이터
+            {
+                "xy": [10, 20],  # Vertex 0
+                "adjacent": ["2", "3"]
+            },
+            {
+                "xy": [45, 30],
+                "adjacent": ["4", "5"]
+            },
+            {
+                "xy": [30, 15],
+                "adjacent": ["0", "5"]
+            },
+            {
+                "xy": [5, 5],
+                "adjacent": None
+            },
+            {
+                "xy": [20, 10],
+                "adjacent": ["1", "3"]
+            },
+            {
+                "xy": [60, 5],
+                "adjacent": ["1", "2"]
+            }
+        ]
 
-def print_result(previous_nodes, shortest_path, start_node, target_node):
-    path = []
-    node = target_node
+        self.init_graph = {}
 
-    while node != start_node: # 시작 노드에 도달할 때 까지 반복
-        path.append(node)
-        node = previous_nodes[node]
+        # print(nodes_num) # 노드에 이름은 불필요함. 단순 id값을 통한 입력, 별개로 현재 x, y 좌표 입력이 필요 (거리는 임의 입력이 아니라 계산으로 입력)
+        # 아래와 같은 형태로 들어가야 할 것 같음
+        # '0': {'xy': [10, 20], 'adjacent': {'2': None, '4': None}}
 
-    path.append(start_node)
+        for idx, vertex in enumerate(example_input):
+            self.init_graph[str(idx)] = {}
+            if vertex["adjacent"]:  # 인접한 Vertex가 있는 경우
+                for adjacent in vertex["adjacent"]:  # 각 인접 vertex에 대한 dict 생성 및 거리값 초기화
+                    self.init_graph[str(idx)][adjacent] = getdistance(example_input, idx, adjacent)
 
-    print("최단 경로에 대한 거리값 : {}.".format(shortest_path[target_node]))
-    # print(" -> ".join(reversed(path)))
-    for vertex in reversed(path):
-        print(vertex)
+        # print("init_graph")
+        # print(init_graph)
 
+        self.graph = Graph(self.init_graph)
 
+        previous_nodes, shortest_path = dijkstra_algorithm(graph=self.graph, start_node="4")
+        print_result(previous_nodes, shortest_path, start_node="4", target_node="5")
+
+        self.init_graph["0"]["4"] = 1
+        self.graph = Graph(self.init_graph)
+
+        previous_nodes, shortest_path = dijkstra_algorithm(graph=self.graph, start_node="4")
+        print_result(previous_nodes, shortest_path, start_node="4", target_node="5")
 
 def dijkstra_algorithm(graph, start_node):
     unvisited_nodes = list(graph.get_nodes())
@@ -112,63 +146,24 @@ def dijkstra_algorithm(graph, start_node):
 
     return previous_nodes, shortest_path
 
+def print_result(previous_nodes, shortest_path, start_node, target_node):
+    path = []
+    node = target_node
+
+    while node != start_node: # 시작 노드에 도달할 때 까지 반복
+        path.append(node)
+        node = previous_nodes[node]
+
+    path.append(start_node)
+
+    print("최단 경로에 대한 거리값 : {}.".format(shortest_path[target_node]))
+    # print(" -> ".join(reversed(path)))
+    for vertex in reversed(path):
+        print(vertex)
+
 def getdistance(input, start, dst):
     return math.sqrt(math.pow(input[int(start)]["xy"][0] - input[int(dst)]["xy"][0], 2) + math.pow(input[int(start)]["xy"][1] - input[int(dst)]["xy"][1], 2))
 
 
 if __name__ == '__main__':
-    example_input = [ # 임의로 가정한 입력 데이터
-        {
-            "xy": [10, 20],  # Vertex 0
-            "adjacent": ["2", "3"]
-        },
-        {
-            "xy": [45, 30],
-            "adjacent": ["4", "5"]
-        },
-        {
-            "xy": [30, 15],
-            "adjacent": ["0", "5"]
-        },
-        {
-            "xy": [5, 5],
-            "adjacent": None
-        },
-        {
-            "xy": [20, 10],
-            "adjacent": ["1", "3"]
-        },
-        {
-            "xy": [60, 5],
-            "adjacent": ["1", "2"]
-        }
-    ]
-
-    init_graph = {}
-
-    # print(nodes_num) # 노드에 이름은 불필요함. 단순 id값을 통한 입력, 별개로 현재 x, y 좌표 입력이 필요 (거리는 임의 입력이 아니라 계산으로 입력)
-    # 아래와 같은 형태로 들어가야 할 것 같음
-    # '0': {'xy': [10, 20], 'adjacent': {'2': None, '4': None}}
-
-    for idx, vertex in enumerate(example_input):
-        init_graph[str(idx)] = {}
-        if vertex["adjacent"]: # 인접한 Vertex가 있는 경우
-            for adjacent in vertex["adjacent"]: # 각 인접 vertex에 대한 dict 생성 및 거리값 초기화
-                init_graph[str(idx)][adjacent] = getdistance(example_input, idx, adjacent)
-
-    # print("init_graph")
-    # print(init_graph)
-
-    graph = Graph(init_graph)
-
-    # print("graph.graph")
-    # print(graph.graph)
-
-    previous_nodes, shortest_path = dijkstra_algorithm(graph=graph, start_node="4")
-    print_result(previous_nodes, shortest_path, start_node="4", target_node="5")
-
-    init_graph["0"]["4"] = 1
-    graph = Graph(init_graph)
-
-    previous_nodes, shortest_path = dijkstra_algorithm(graph=graph, start_node="4")
-    print_result(previous_nodes, shortest_path, start_node="4", target_node="5")
+    dijkstra = Dijkstra()
