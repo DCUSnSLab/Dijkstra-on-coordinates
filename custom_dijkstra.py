@@ -82,87 +82,84 @@ class Dijkstra():
 
         self.init_graph = {}
 
-        # print(nodes_num) # 노드에 이름은 불필요함. 단순 id값을 통한 입력, 별개로 현재 x, y 좌표 입력이 필요 (거리는 임의 입력이 아니라 계산으로 입력)
-        # 아래와 같은 형태로 들어가야 할 것 같음
-        # '0': {'xy': [10, 20], 'adjacent': {'2': None, '4': None}}
-
         for idx, vertex in enumerate(example_input):
             self.init_graph[str(idx)] = {}
             if vertex["adjacent"]:  # 인접한 Vertex가 있는 경우
                 for adjacent in vertex["adjacent"]:  # 각 인접 vertex에 대한 dict 생성 및 거리값 초기화
-                    self.init_graph[str(idx)][adjacent] = getdistance(example_input, idx, adjacent)
+                    self.init_graph[str(idx)][adjacent] = self.calcdistance(example_input, idx, adjacent)
 
         # print("init_graph")
         # print(init_graph)
 
         self.graph = Graph(self.init_graph)
 
-        previous_nodes, shortest_path = dijkstra_algorithm(graph=self.graph, start_node="4")
-        print_result(previous_nodes, shortest_path, start_node="4", target_node="5")
+        previous_nodes, shortest_path = self.dijkstra_algorithm(graph=self.graph, start_node="4")
+        self.print_result(previous_nodes, shortest_path, start_node="4", target_node="5")
 
         self.init_graph["0"]["4"] = 1
         self.graph = Graph(self.init_graph)
 
-        previous_nodes, shortest_path = dijkstra_algorithm(graph=self.graph, start_node="4")
-        print_result(previous_nodes, shortest_path, start_node="4", target_node="5")
+        previous_nodes, shortest_path = self.dijkstra_algorithm(graph=self.graph, start_node="4")
+        self.print_result(previous_nodes, shortest_path, start_node="4", target_node="5")
 
-def dijkstra_algorithm(graph, start_node):
-    unvisited_nodes = list(graph.get_nodes())
+    def dijkstra_algorithm(self, graph, start_node):
+        unvisited_nodes = list(graph.get_nodes())
 
-    # 이 dict를 통해 각 노드 방문 비용을 절약하고 그래프를 따라 이동할 때 갱신한다.
-    shortest_path = {}
+        # 이 dict를 통해 각 노드 방문 비용을 절약하고 그래프를 따라 이동할 때 갱신한다.
+        shortest_path = {}
 
-    # 이 dict를 통해 지금까지 발견된 노드에 대한 알려진 최단 경로 저장
-    previous_nodes = {}
+        # 이 dict를 통해 지금까지 발견된 노드에 대한 알려진 최단 경로 저장
+        previous_nodes = {}
 
-    # 미방문한 노드들에 대해서는 표현가능한 최대 값 사용
-    max_value = sys.maxsize
-    for node in unvisited_nodes:
-        shortest_path[node] = max_value
-
-    # 시작 노드에 대한 최단 경로는 0
-    shortest_path[start_node] = 0
-
-    # 모든 노드를 방문할 때 까지 수행
-    while unvisited_nodes:
-        # The code block below finds the node with the lowest score
-        current_min_node = None
+        # 미방문한 노드들에 대해서는 표현가능한 최대 값 사용
+        max_value = sys.maxsize
         for node in unvisited_nodes:
-            if current_min_node == None:
-                current_min_node = node
-            elif shortest_path[node] < shortest_path[current_min_node]:
-                current_min_node = node
+            shortest_path[node] = max_value
 
-        # 현재 노드 이웃을 검색하고 거리를 업데이트
-        neighbors = graph.get_outgoing_edges(current_min_node)
-        for neighbor in neighbors:
-            tentative_value = shortest_path[current_min_node] + graph.value(current_min_node, neighbor)
-            if tentative_value < shortest_path[neighbor]:
-                shortest_path[neighbor] = tentative_value
-                previous_nodes[neighbor] = current_min_node
+        # 시작 노드에 대한 최단 경로는 0
+        shortest_path[start_node] = 0
 
-        # 이웃을 방문한 후 노드를 "방문함"으로 표시합니다.
-        unvisited_nodes.remove(current_min_node)
+        # 모든 노드를 방문할 때 까지 수행
+        while unvisited_nodes:
+            # The code block below finds the node with the lowest score
+            current_min_node = None
+            for node in unvisited_nodes:
+                if current_min_node == None:
+                    current_min_node = node
+                elif shortest_path[node] < shortest_path[current_min_node]:
+                    current_min_node = node
 
-    return previous_nodes, shortest_path
+            # 현재 노드 이웃을 검색하고 거리를 업데이트
+            neighbors = graph.get_outgoing_edges(current_min_node)
+            for neighbor in neighbors:
+                tentative_value = shortest_path[current_min_node] + graph.value(current_min_node, neighbor)
+                if tentative_value < shortest_path[neighbor]:
+                    shortest_path[neighbor] = tentative_value
+                    previous_nodes[neighbor] = current_min_node
 
-def print_result(previous_nodes, shortest_path, start_node, target_node):
-    path = []
-    node = target_node
+            # 이웃을 방문한 후 노드를 "방문함"으로 표시합니다.
+            unvisited_nodes.remove(current_min_node)
 
-    while node != start_node: # 시작 노드에 도달할 때 까지 반복
-        path.append(node)
-        node = previous_nodes[node]
+        return previous_nodes, shortest_path
 
-    path.append(start_node)
+    def print_result(self, previous_nodes, shortest_path, start_node, target_node):
+        path = []
+        node = target_node
 
-    print("최단 경로에 대한 거리값 : {}.".format(shortest_path[target_node]))
-    # print(" -> ".join(reversed(path)))
-    for vertex in reversed(path):
-        print(vertex)
+        while node != start_node: # 시작 노드에 도달할 때 까지 반복
+            path.append(node)
+            node = previous_nodes[node]
 
-def getdistance(input, start, dst):
-    return math.sqrt(math.pow(input[int(start)]["xy"][0] - input[int(dst)]["xy"][0], 2) + math.pow(input[int(start)]["xy"][1] - input[int(dst)]["xy"][1], 2))
+        path.append(start_node)
+
+        print("최단 경로에 대한 거리값 : {}.".format(shortest_path[target_node]))
+        # print(" -> ".join(reversed(path)))
+        for vertex in reversed(path):
+            print(vertex)
+
+    def calcdistance(self, input, start, dst):
+        """ 입력받은 start, dst Vertex의 거리 값 계산 후 리턴"""
+        return math.sqrt(math.pow(input[int(start)]["xy"][0] - input[int(dst)]["xy"][0], 2) + math.pow(input[int(start)]["xy"][1] - input[int(dst)]["xy"][1], 2))
 
 
 if __name__ == '__main__':
