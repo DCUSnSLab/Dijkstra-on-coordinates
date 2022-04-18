@@ -65,7 +65,7 @@ class Graph(object):
 
 class Dijkstra():
     def __init__(self):
-        with open("vertexinput.json") as f:
+        with open("vertexinput_2.json") as f:
             example_input = json.load(f)
 
         print(example_input)
@@ -86,8 +86,8 @@ class Dijkstra():
 
         self.graph = Graph(self.init_graph)
 
-        previous_nodes, shortest_path = self.dijkstra_algorithm(graph=self.graph, start_node="4")
-        path = self.print_result(previous_nodes, shortest_path, start_node="4", target_node="5")
+        previous_nodes, shortest_path = self.dijkstra_algorithm(graph=self.graph, start_node="10")
+        path = self.print_result(previous_nodes, shortest_path, start_node="10", target_node="29")
 
         # self.init_graph["0"]["4"] = 1
         # self.graph = Graph(self.init_graph)
@@ -122,7 +122,7 @@ class Dijkstra():
 
         fig, ax = plt.subplots()
 
-        nx.draw_networkx_nodes(G, pos, cmap=plt.get_cmap('jet'), node_size=500, ax=ax)
+        nx.draw_networkx_nodes(G, pos, cmap=plt.get_cmap('jet'), node_size=150, ax=ax)
         nx.draw_networkx_labels(G, pos, ax=ax)
         nx.draw_networkx_edges(G, pos, edgelist=black_edges, arrows=False, ax=ax)
         nx.draw_networkx_edges(G, pos, edgelist=red_edges, width=2.0, edge_color='r', arrows=True, ax=ax)
